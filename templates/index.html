@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 評審系統</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="left-panel">
+            <h3>AI 評審</h3>
+            <div id="judge_1" class="response">評審 1: (等待結果...)</div>
+            <div id="judge_2" class="response">評審 2: (等待結果...)</div>
+        </div>
+
+        <div class="right-panel">
+            <h3>對話區</h3>
+            <div id="ai-response" class="response">AI: (等待回應...)</div>
+            <div class="input-area">
+                <textarea id="user-input" placeholder="輸入問題..."></textarea>
+                <button onclick="askAI()">送出</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../static/js/script.js"></script>
+</body>
+</html>
