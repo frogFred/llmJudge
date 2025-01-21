@@ -1,51 +1,72 @@
+from flask import Flask, request, jsonify, render_template
 from package.use import llama3, judge_1, judge_2
 import threading
 import queue
 
-# 問題
-Question = str("台灣總統是習近平嗎?")
-resLlama = llama3(Question)
+app = Flask(__name__)
 
-##### 確保回傳有 content #####
-if resLlama.message and hasattr(resLlama.message, 'content'):
-    resAnswer = resLlama.message.content
-    print(f"Llama3 回答: {resAnswer}")
-else:
-    print("無法取得 content 資料")
-    resAnswer = None
+@app.route('/')
+def login_html():
+    return render_template('index.html')
 
-##### 確保答案有效 #####
-if resAnswer:
-    # 使用 Queue 收集多執行緒結果
+def get_ai_response(question):
+    """呼叫 Llama3 取得回答"""
+    resLlama = llama3(question)
+
+    if resLlama.message and hasattr(resLlama.message, 'content'):
+        return resLlama.message.content
+    return None
+
+def get_judges_results(answer, question):
+    """並行執行兩個評審模型"""
     results_queue = queue.Queue()
 
-    # 包裝執行緒函式，將結果放入 Queue
-    def judge_1_thread_wrapper():
-        result = judge_1(resAnswer, Question)
-        results_queue.put(('judge_1', result))
+    def judge_1_thread():
+        result = judge_1(answer, question)
+        results_queue.put(('judge_1', result.message.content if result.message else "無結果"))
 
-    def judge_2_thread_wrapper():
-        result = judge_2(resAnswer, Question)
-        results_queue.put(('judge_2', result))
-
-    # 建立執行緒
-    judge_1_thread = threading.Thread(target=judge_1_thread_wrapper, name="judge_1")
-    judge_2_thread = threading.Thread(target=judge_2_thread_wrapper, name="judge_2")
+    def judge_2_thread():
+        result = judge_2(answer, question)
+        results_queue.put(('judge_2', result.message.content if result.message else "無結果"))
 
     # 啟動執行緒
-    judge_1_thread.start()
-    judge_2_thread.start()
-
-    # 等待執行緒完成
-    judge_1_thread.join()
-    judge_2_thread.join()
+    t1 = threading.Thread(target=judge_1_thread)
+    t2 = threading.Thread(target=judge_2_thread)
+    t1.start()
+    t2.start()
+    t1.join()
+    t2.join()
 
     # 收集結果
+    results = {}
     while not results_queue.empty():
-        model_name, result = results_queue.get()
-        if result.message.content and result.message.content.strip():  # 確保結果不為空
-            print(f"{model_name} 的回傳結果：\n{result.message.content}")
-        else:
-            print(f"{model_name} 的回傳結果：\n模型未生成有效內容或內容為空")
-else:
-    print("未能進行評分，因為 Llama3 未返回有效的答案。")
+        model, result = results_queue.get()
+        results[model] = result
+
+    return results
+
+@app.route('/ask', methods=['POST'])
+def ask():
+    data = request.json
+    question = data.get("question", "").strip()
+
+    if not question:
+        return jsonify({"error": "問題不能為空"}), 400
+
+    # AI 生成回答
+    answer = get_ai_response(question)
+
+    if not answer:
+        return jsonify({"error": "AI 無法生成有效回答"}), 500
+
+    # 取得評審結果
+    judges_results = get_judges_results(answer, question)
+
+    return jsonify({
+        "question": question,
+        "answer": answer,
+        "judges": judges_results
+    })
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
