@@ -39,7 +39,7 @@ def judge_1(answer, question):
 def judge_2(answer, question):
     client = Client(host='http://localhost:11434')
     response = client.chat(
-        model='llama3.2', 
+        model='gemma2:2b', 
         messages=[
             {
                 'role': 'system',
