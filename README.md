@@ -28,4 +28,4 @@ AI評審是一個用來判斷生成式 AI 回答是否符合問題需求的工�
 請使用 Git 下載專案至本機：  
 ```bash
 git clone https://github.com/frogFred/llmJudge.git
-cd AI評審
+cd llmJudge
