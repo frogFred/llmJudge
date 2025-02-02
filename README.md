@@ -29,3 +29,17 @@ AI評審是一個用來判斷生成式 AI 回答是否符合問題需求的工�
 ```bash
 git clone https://github.com/frogFred/llmJudge.git
 cd llmJudge
+```
+
+### 3. **啟動專案**
+- **Python 依賴套件**
+```bash
+pip install -r requirements.txt
+```
+
+- **啟動 Python 伺服器**
+```bash
+python main.py
+```
+- **開啟前端頁面**
+http://127.0.0.1:5000/index
