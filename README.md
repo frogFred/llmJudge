@@ -27,5 +27,5 @@ AI評審是一個用來判斷生成式 AI 回答是否符合問題需求的工�
 ### 2. **專案下載**  
 請使用 Git 下載專案至本機：  
 ```bash
-git clone [<[你的 GitHub 專案網址](https://github.com/frogFred/llmJudge.git)>]
+git clone https://github.com/frogFred/llmJudge.git
 cd AI評審
