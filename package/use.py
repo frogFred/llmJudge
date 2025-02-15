@@ -19,6 +19,7 @@ def judge_1(answer, question):
     client = Client(host='http://localhost:11434')
     response = client.chat(
         model='llama3.2', 
+        format='json',
         messages=[
             {
                 'role': 'system',
@@ -30,7 +31,7 @@ def judge_1(answer, question):
             },
             {
                 'role': 'assistant',
-                'content': '請評估以上回答的真實性，並給出評分（1到5）和理由，把重點放在回答問題上。'
+                'content': '請評估以上回答的真實性，並給出評分（1到5）和理由，把重點放在回答問題上。使用以下json格式進行回答，例如{"score": 5, "reason": "因為回答完全正確"}。'
             }
         ],
     )
@@ -40,6 +41,7 @@ def judge_2(answer, question):
     client = Client(host='http://localhost:11434')
     response = client.chat(
         model='gemma2:2b', 
+        format='json',
         messages=[
             {
                 'role': 'system',
@@ -51,7 +53,7 @@ def judge_2(answer, question):
             },
             {
                 'role': 'assistant',
-                'content': '請評估以上回答的語言表達清晰度，並給出評分（1到5）和理由，把重點放在回答問題上。。'
+                'content': '請評估以上回答的語言表達清晰度，並給出評分（1到5）和理由，把重點放在回答問題上使用以下json格式進行回答，例如{"score": 5, "reason": "因為回答完全正確"}。'
             }
         ],
     )
